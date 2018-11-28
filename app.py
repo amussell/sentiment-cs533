@@ -50,6 +50,8 @@ def getW2VModel(data, train):
     wModel.fit(X, y)
     return wModel
 
+global data, train, test, xTest, yTest, model
+
 """
     ROUTES
 """
@@ -72,7 +74,7 @@ def home():
 
 @app.route('/train/onehot', methods=['POST', 'GET'])
 def trainOneHot():
-    global data, train, test, xTestData, yTestData
+    global data, train, test, xTest, yTest
     wm = getOneHotModel(data, train)
     xTestData, yTestData = getXYOneHot(test, data)
     return redirect('/')
