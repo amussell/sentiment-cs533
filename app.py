@@ -20,11 +20,15 @@ def home():
     return """
     <html>
         <h1>Hello World</h1>
-        <form action="" method="post">
+        <form action="/train" method="post">
             <input type="submit" name="upvote" value="Train" />
         </form>
     </html>
     """
+
+@app.route('/train', methods=['POST'])
+def train():
+    return ""
 
 # Main
 if __name__ == '__main__':
