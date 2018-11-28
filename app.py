@@ -23,7 +23,7 @@ dataFilename = 'static/data.pkl'
 testFilename = 'static/test.pkl'
 trainFilename = 'static/train.pkl'
 testXFilename = 'static/textx.pkl'
-textYFilename = 'static/testy.pkl'
+testYFilename = 'static/testy.pkl'
 modelFilename = 'static/model.pkl'
 
 
@@ -68,8 +68,6 @@ def plot_roc(gold, guess):
     plt.legend(loc="lower right")
     return plt
 
-global data, train, test, testX, testX, model
-
 """
     ROUTES
 """
@@ -92,7 +90,6 @@ def home():
 
 @app.route('/train/onehot', methods=['POST', 'GET'])
 def trainOneHot():
-    global data, train, test, testX, testY, model
     data = pd.read_pickle('sentiment.pkl')
     data.polarity = data.polarity.apply(lambda x : 1 if x == 4 else 0)
     data = data[data.w2v.map(type) != np.float64]
@@ -100,11 +97,20 @@ def trainOneHot():
     test = data[5000:]
     model = getOneHotModel(data, train)
     testX, testY = getXYOneHot(test, data)
+
+    modelFile = open(modelFilename, 'wb')
+    pickle.dump(model, modelFile)
+    testXFile = open(testXFilename, 'wb')
+    pickle.dump(testX, testXFile)
+    testYFile = open(testYFilename, 'wb')
+    pickle.dump(testY, testYFile)
+    modelFile.close()
+    testXFile.close()
+    testYFile.close()
     return redirect('/')
 
 @app.route('/train/w2v', methods=['POST', 'GET'])
 def trainW2V():
-    global data, train, test, testX, testY, model
     data = pd.read_pickle('sentiment.pkl')
     data.polarity = data.polarity.apply(lambda x : 1 if x == 4 else 0)
     data = data[data.w2v.map(type) != np.float64]
@@ -112,38 +118,34 @@ def trainW2V():
     test = data[5000:]
     model = getW2VModel(data, train)
     testX, testY = getXYW2V(test)
+
+    modelFile = open(modelFilename, 'wb')
+    pickle.dump(model, modelFile)
+    testXFile = open(testXFilename, 'wb')
+    pickle.dump(testX, testXFile)
+    testYFile = open(testYFilename, 'wb')
+    pickle.dump(testY, testYFile)
+    modelFile.close()
+    testXFile.close()
+    testYFile.close()
     return redirect('/')
 
 @app.route('/test', methods=['GET', 'POST'])
 def testModel():
-    global model, testX, testY
+    modelFile = open(modelFilename, 'rb')
+    model = pickle.load(modelFile)
+    testXFile = open(testXFilename, 'rb')
+    testX = pickle.load(testXFile)
+    testYFile = open(testYFilename, 'rb')
+    testY = pickle.load(testYFile)
+    modelFile.close()
+    testXFile.close()
+    testYFile.close()
+
     plt = plot_roc(model.predict(testX), testY)
     file = 'static/roc.jpg'
     plt.savefig(file)
     return render_template('test.html', name=file, accuracy=accuracy_score(model.predict(testX), testY))
-
-@app.route('/debug1', methods=['GET'])
-def debug1():
-    model = 'THE MODEL'
-    modelFile = open(modelFilename, 'wb')
-    pickle.dump(model, modelFile)
-    modelFile.close()
-    return "SET THE MODEL"
-
-@app.route('/debug2', methods=['GET'])
-def debug2():
-    model = 'THE MODEL 2'
-    modelFile = open(modelFilename, 'wb')
-    pickle.dump(model, modelFile)
-    modelFile.close()
-    return "SET THE MODEL 2"
-
-@app.route('/debug3', methods=['GET'])
-def debug3():
-    modelFile = open(modelFilename, 'rb')
-    model = pickle.load(modelFile)
-    modelFile.close()
-    return model
 
 # Main
 if __name__ == '__main__':
