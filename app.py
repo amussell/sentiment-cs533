@@ -51,49 +51,6 @@ def getW2VModel(data, train):
     return wModel
 
 """
-    Data functions
-"""
-def dataSetup():
-    data = pd.read_pickle('sentiment.pkl')
-    data.polarity = data.polarity.apply(lambda x : 1 if x == 4 else 0)
-    data = data[data.w2v.map(type) != np.float64]
-    train = data[:4000]
-    test = data[5000:]
-    dataFile = open(dataFilename, 'wb')
-    trainFile = open(trainFilename, 'wb')
-    testFile = open(testFilename, 'wb')
-    pickle.dump(data, dataFile)
-    pickle.dump(train, trainFile)
-    pickle.dump(test, testFile)
-    dataFile.close()
-    trainFile.close()
-    testFile.close()
-
-def loadDataTrain():
-    dataFile = open(dataFilename, 'rb')
-    trainFile = open(trainFilename, 'rb')
-    testFile = open(testFilename, 'rb')
-    data = pickle.load(dataFile)
-    train = pickle.load(trainFile)
-    test = pickle.load(testFile)
-    dataFile.close()
-    trainFile.close()
-    testFile.close()
-    return data, train, test
-
-def loadDataTest():
-    modelFile = open(modelFilename, 'rb')
-    xTestDataFile = open(xTestDataFilename, 'rb')
-    yTestDataFile = open(yTestDataFilename, 'rb')
-    model = pickle.load(modelFile)
-    testX = pickle.load(xTestDataFile)
-    testY = pickle.load(yTestDataFile)
-    modelFile.close()
-    xTestDataFile.close()
-    yTestDataFile.close()
-    return model, testX, testY
-
-"""
     ROUTES
 """
 @app.route('/', methods=['GET'])
@@ -115,26 +72,19 @@ def home():
 
 @app.route('/train/onehot', methods=['POST', 'GET'])
 def trainOneHot():
-    data, train, test = loadDataTrain()
+    global data, train, test, xTestData, yTestData
     wm = getOneHotModel(data, train)
-    X, y = getXYOneHot(test, data)
-    xTestDataFile = file.open(xTestDataFilename, 'wb')
-    yTestDataFile = file.open(yTestDataFilename, 'wb')
-    modelFile = file.open(modelFielname, 'wb')
-    pickle.dump(X, xTestDataFile)
-    pickle.dump(y, yTestDataFile)
-    pickle.dump(wm, modelFile)
+    xTestData, yTestData = getXYOneHot(test, data)
     return redirect('/')
 
 @app.route('/train/w2v', methods=['POST', 'GET'])
 def trainW2V():
-    dataSetup()
-    data, train, test = loadDataTrain()
+    global data, train, test
     return redirect('/')
 
 @app.route('/test', methods=['GET', 'POST'])
 def testModel():
-    model, testX, testY = loadDataTest()
+    global model, testX, testY
     return """
         <html>
             <div>
@@ -146,6 +96,16 @@ def testModel():
         </html>
     """
 
+glob = "FIRST"
+
+@app.route('/')
+
 # Main
 if __name__ == '__main__':
+    global data, train, test
+    data = pd.read_pickle('sentiment.pkl')
+    data.polarity = data.polarity.apply(lambda x : 1 if x == 4 else 0)
+    data = data[data.w2v.map(type) != np.float64]
+    train = data[:4000]
+    test = data[5000:]
     app.run(debug=True, use_reloader=True)
