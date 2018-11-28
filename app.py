@@ -85,6 +85,11 @@ def home():
 @app.route('/train/onehot', methods=['POST', 'GET'])
 def trainOneHot():
     global data, train, test, testX, testY, model
+    data = pd.read_pickle('sentiment.pkl')
+    data.polarity = data.polarity.apply(lambda x : 1 if x == 4 else 0)
+    data = data[data.w2v.map(type) != np.float64]
+    train = data[:4000]
+    test = data[5000:]
     model = getOneHotModel(data, train)
     testX, testY = getXYOneHot(test, data)
     return redirect('/')
@@ -92,6 +97,11 @@ def trainOneHot():
 @app.route('/train/w2v', methods=['POST', 'GET'])
 def trainW2V():
     global data, train, test, testX, testY, model
+    data = pd.read_pickle('sentiment.pkl')
+    data.polarity = data.polarity.apply(lambda x : 1 if x == 4 else 0)
+    data = data[data.w2v.map(type) != np.float64]
+    train = data[:4000]
+    test = data[5000:]
     model = getW2VModel(data, train)
     testX, testY = getXYW2V(test)
     return redirect('/')
