@@ -47,7 +47,7 @@ def home():
     </html>
     """
 
-@app.route('/train/onehot', methods=['POST'])
+@app.route('/train/onehot', methods=['POST', 'GET'])
 def trainOneHot():
     data, train, test = loadDataTrain()
     wm = getOneHotModel(data, train)
@@ -60,7 +60,7 @@ def trainOneHot():
     pickle.dump(wm, modelFile)
     return redirect('/')
 
-@app.route('/train/w2v', methods=['POST'])
+@app.route('/train/w2v', methods=['POST', 'GET'])
 def trainW2V():
     return redirect('/')
 
