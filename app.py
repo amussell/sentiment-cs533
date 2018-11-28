@@ -28,7 +28,7 @@ def home():
 
 @app.route('/train', methods=['POST'])
 def train():
-    return ""
+    return redirect('/')
 
 # Main
 if __name__ == '__main__':
