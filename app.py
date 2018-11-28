@@ -14,12 +14,12 @@ import pickle
 # Constants
 UPLOAD_FOLDER = '/tmp/'
 ALLOWED_EXTENSIONS = set(['xlsx', 'xls'])
-dataFilename = 'data.pkl'
-trainFilename = 'train.pkl'
-testFilename = 'test.pkl'
-modelFilename = 'model.pkl'
-xTestDataFilename = 'xTest.pkl'
-yTestDataFilename = 'yTest.pkl'
+dataFilename = '/tmp/data.pkl'
+trainFilename = '/tmp/train.pkl'
+testFilename = '/tmp/test.pkl'
+modelFilename = '/tmp/model.pkl'
+xTestDataFilename = '/tmp/xTest.pkl'
+yTestDataFilename = '/tmp/yTest.pkl'
 
 # Initialize flask app
 app = Flask(__name__)
