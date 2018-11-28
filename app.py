@@ -50,7 +50,24 @@ def getW2VModel(data, train):
     wModel.fit(X, y)
     return wModel
 
-global data, train, test, xTest, yTest, model
+def plot_roc(gold, guess):
+    x, y, _ = metrics.roc_curve(gold, guess)
+    auc = metrics.auc(x, y)
+
+    plt.figure()
+    lw = 2
+    plt.plot(x, y, color='darkorange',
+             lw=lw, label='ROC curve (area = %0.2f)' % auc)
+    plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver operating characteristic example')
+    plt.legend(loc="lower right")
+    return plt
+
+global data, train, test, testX, testX, model
 
 """
     ROUTES
@@ -74,9 +91,9 @@ def home():
 
 @app.route('/train/onehot', methods=['POST', 'GET'])
 def trainOneHot():
-    global data, train, test, xTest, yTest
-    wm = getOneHotModel(data, train)
-    xTestData, yTestData = getXYOneHot(test, data)
+    global data, train, test, testX, testY, model
+    model = getOneHotModel(data, train)
+    testX, testY = getXYOneHot(test, data)
     return redirect('/')
 
 @app.route('/train/w2v', methods=['POST', 'GET'])
@@ -87,20 +104,8 @@ def trainW2V():
 @app.route('/test', methods=['GET', 'POST'])
 def testModel():
     global model, testX, testY
-    return """
-        <html>
-            <div>
-                <h1>Test Results</h1>
-            </div>
-            <div>
-                <h4>Accuracy</h4><p>""" + str(accuracy_score(model.predict(testX), testY)) + """</p>
-            </div>
-        </html>
-    """
-
-glob = "FIRST"
-
-@app.route('/')
+    plt = plot_roc(model.predict(testX), testY)
+    return render_template('test.html', name=plt.show(), accuracy=accuracy_score(model.predict(testX), testY) )
 
 # Main
 if __name__ == '__main__':
