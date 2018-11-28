@@ -76,12 +76,21 @@ def loadDataTrain():
     data = pickle.load(dataFile)
     train = pickle.load(trainFile)
     test = pickle.load(testFile)
+    dataFile.close()
+    trainFile.close()
+    testFile.close()
     return data, train, test
 
 def loadDataTest():
-    model = pickle.load(modelFilename)
-    testX = pickle.load(xTestDataFilename)
-    testY = pickle.load(yTestDataFilename)
+    modelFile = open(modelFilename, 'rb')
+    xTestDataFile = open(xTestDataFilename, 'rb')
+    yTestDataFile = open(yTestDataFilename, 'rb')
+    model = pickle.load(modelFile)
+    testX = pickle.load(xTestDataFile)
+    testY = pickle.load(yTestDataFile)
+    modelFile.close()
+    xTestDataFile.close()
+    yTestDataFile.close()
     return model, testX, testY
 
 """
@@ -119,7 +128,6 @@ def trainOneHot():
 
 @app.route('/train/w2v', methods=['POST', 'GET'])
 def trainW2V():
-    dataSetup()
     data, train, test = loadDataTrain()
     return redirect('/')
 
@@ -139,4 +147,5 @@ def testModel():
 
 # Main
 if __name__ == '__main__':
+    dataSetup()
     app.run(debug=True, use_reloader=True)
