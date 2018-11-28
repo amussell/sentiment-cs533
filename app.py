@@ -91,15 +91,19 @@ def trainOneHot():
 
 @app.route('/train/w2v', methods=['POST', 'GET'])
 def trainW2V():
-    global data, train, test
+    global data, train, test, testX, testY, model
+    model = getW2VModel(data, train)
+    testX, testY = getXYOneHot(test)
     return redirect('/')
 
 @app.route('/test', methods=['GET', 'POST'])
 def testModel():
     global model, testX, testY
     plt = plot_roc(model.predict(testX), testY)
-    plt.savefig('roc.png')
-    return render_template('test.html', name="roc.png", accuracy=accuracy_score(model.predict(testX), testY))
+    file = 'roc.png'
+    plt.savefig(file)
+    filepath = os.path.abspath(file)
+    return render_template('test.html', name=filepath, accuracy=accuracy_score(model.predict(testX), testY))
 
 # Main
 if __name__ == '__main__':
