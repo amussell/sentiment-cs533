@@ -27,59 +27,6 @@ app.secret_key = uuid.uuid4().bytes
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 """
-    ROUTES
-"""
-
-@app.route('/', methods=['GET'])
-def home():
-    return """
-    <html>
-        <h1>Hello World</h1>
-        <form action="/train/onehot" method="post">
-            <input type="submit" name="oneHotTrain" value="Train One Hot" />
-        </form>
-        <form action="/train/w2v" method="post">
-            <input type="submit" name="w2vTrain" value="Train Word2Vec" />
-        </form>
-        <form action="/test" method="post">
-            <input type="submit" name="modelTest" value="Test Model" />
-        </form>
-    </html>
-    """
-
-@app.route('/train/onehot', methods=['POST', 'GET'])
-def trainOneHot():
-    data, train, test = loadDataTrain()
-    wm = getOneHotModel(data, train)
-    X, y = getXYOneHot(test, data)
-    xTestDataFile = file.open(xTestDataFilename, 'wb')
-    yTestDataFile = file.open(yTestDataFilename, 'wb')
-    modelFile = file.open(modelFielname, 'wb')
-    pickle.dump(X, xTestDataFile)
-    pickle.dump(y, yTestDataFile)
-    pickle.dump(wm, modelFile)
-    return redirect('/')
-
-@app.route('/train/w2v', methods=['POST', 'GET'])
-def trainW2V():
-    return redirect('/')
-
-@app.route('/test', methods=['GET'])
-def testModel():
-    model, testX, testY = loadDataTest()
-    return """
-        <html>
-            <div>
-                <h1>Test Results</h1>
-            </div>
-            <div>
-                <h4>Accuracy</h4><p>""" + str(accuracy_score(model.predict(testX), testY)) + """</p>
-            </div>
-        </html>
-    """
-
-
-"""
     Training Helper Functions
 """
 def getXYW2V(d):
@@ -130,6 +77,58 @@ def loadDataTest():
     testX = pickle.load(xTestDataFilename)
     testY = pickle.load(yTestDataFilename)
     return model, testX, testY
+
+"""
+    ROUTES
+"""
+@app.route('/', methods=['GET'])
+def home():
+    return """
+    <html>
+        <h1>Hello World</h1>
+        <form action="/train/onehot" method="post">
+            <input type="submit" name="oneHotTrain" value="Train One Hot" />
+        </form>
+        <form action="/train/w2v" method="post">
+            <input type="submit" name="w2vTrain" value="Train Word2Vec" />
+        </form>
+        <form action="/test" method="post">
+            <input type="submit" name="modelTest" value="Test Model" />
+        </form>
+    </html>
+    """
+
+@app.route('/train/onehot', methods=['POST', 'GET'])
+def trainOneHot():
+    data, train, test = loadDataTrain()
+    wm = getOneHotModel(data, train)
+    X, y = getXYOneHot(test, data)
+    xTestDataFile = file.open(xTestDataFilename, 'wb')
+    yTestDataFile = file.open(yTestDataFilename, 'wb')
+    modelFile = file.open(modelFielname, 'wb')
+    pickle.dump(X, xTestDataFile)
+    pickle.dump(y, yTestDataFile)
+    pickle.dump(wm, modelFile)
+    return redirect('/')
+
+@app.route('/train/w2v', methods=['POST', 'GET'])
+def trainW2V():
+    data, train, test = loadDataTrain()
+    return redirect('/')
+
+@app.route('/test', methods=['GET'])
+def testModel():
+    model, testX, testY = loadDataTest()
+    return """
+        <html>
+            <div>
+                <h1>Test Results</h1>
+            </div>
+            <div>
+                <h4>Accuracy</h4><p>""" + str(accuracy_score(model.predict(testX), testY)) + """</p>
+            </div>
+        </html>
+    """
 
 # Main
 if __name__ == '__main__':
