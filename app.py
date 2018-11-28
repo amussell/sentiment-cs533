@@ -19,6 +19,14 @@ app = Flask(__name__)
 app.secret_key = uuid.uuid4().bytes
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+dataFilename = 'static/data.pkl'
+testFilename = 'static/test.pkl'
+trainFilename = 'static/train.pkl'
+testXFilename = 'static/textx.pkl'
+textYFilename = 'static/testy.pkl'
+modelFilename = 'static/model.pkl'
+
+
 """
     Training Helper Functions
 """
@@ -113,6 +121,29 @@ def testModel():
     file = 'static/roc.jpg'
     plt.savefig(file)
     return render_template('test.html', name=file, accuracy=accuracy_score(model.predict(testX), testY))
+
+@app.route('/debug1', methods=['GET'])
+def debug1():
+    model = 'THE MODEL'
+    modelFile = open(modelFilename, 'wb')
+    pickle.dump(model, modelFile)
+    modelFile.close()
+    return "SET THE MODEL"
+
+@app.route('/debug2', methods=['GET'])
+def debug2():
+    model = 'THE MODEL 2'
+    modelFile = open(modelFilename, 'wb')
+    pickle.dump(model, modelFile)
+    modelFile.close()
+    return "SET THE MODEL 2"
+
+@app.route('/debug3', methods=['GET'])
+def debug3():
+    modelFile = open(modelFilename, 'rb')
+    model = pickle.load(modelFile)
+    modelFile.close()
+    return model
 
 # Main
 if __name__ == '__main__':
