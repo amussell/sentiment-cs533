@@ -113,10 +113,11 @@ def trainOneHot():
 
 @app.route('/train/w2v', methods=['POST', 'GET'])
 def trainW2V():
-    data, train, test = loadDataTrain()
+    dataSetup()
+    #data, train, test = loadDataTrain()
     return redirect('/')
 
-@app.route('/test', methods=['GET'])
+@app.route('/test', methods=['GET', 'POST'])
 def testModel():
     model, testX, testY = loadDataTest()
     return """
@@ -132,5 +133,4 @@ def testModel():
 
 # Main
 if __name__ == '__main__':
-    dataSetup()
     app.run(debug=True, use_reloader=True)
