@@ -17,7 +17,14 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/', methods=['GET'])
 def home():
-    return "<html><h1>Hello World</h1></html>"
+    return """
+    <html>
+        <h1>Hello World</h1>
+        <form action="" method="post">
+            <input type="submit" name="upvote" value="Train" />
+        </form>
+    </html>
+    """
 
 # Main
 if __name__ == '__main__':
