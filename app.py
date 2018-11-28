@@ -12,14 +12,7 @@ import matplotlib.pyplot as plt
 import pickle
 
 # Constants
-UPLOAD_FOLDER = '/tmp/'
-ALLOWED_EXTENSIONS = set(['xlsx', 'xls'])
-dataFilename = '/tmp/data.pkl'
-trainFilename = '/tmp/train.pkl'
-testFilename = '/tmp/test.pkl'
-modelFilename = '/tmp/model.pkl'
-xTestDataFilename = '/tmp/xTest.pkl'
-yTestDataFilename = '/tmp/yTest.pkl'
+UPLOAD_FOLDER = 'tmp/'
 
 # Initialize flask app
 app = Flask(__name__)
@@ -105,7 +98,8 @@ def trainW2V():
 def testModel():
     global model, testX, testY
     plt = plot_roc(model.predict(testX), testY)
-    return render_template('test.html', name=plt.show(), accuracy=accuracy_score(model.predict(testX), testY) )
+    plt.savefig('roc.png')
+    return render_template('test.html', name="roc.png", accuracy=accuracy_score(model.predict(testX), testY))
 
 # Main
 if __name__ == '__main__':
