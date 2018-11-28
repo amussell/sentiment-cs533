@@ -143,7 +143,7 @@ def testModel():
     testYFile.close()
 
     plt = plot_roc(model.predict(testX), testY)
-    file = 'static/roc.jpg'
+    file = 'static/roc.png'
     plt.savefig(file)
     return render_template('test.html', name=file, accuracy=accuracy_score(model.predict(testX), testY))
 
